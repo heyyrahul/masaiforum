@@ -18,12 +18,14 @@ postRoute.get('/posts',async(req,res)=>{
 })
 
 //Create a new post
-postRoute.post("/posts",auth,async(req,res)=>{
+postRoute.post("/posts", auth, async (req, res) => {
+    console.log(req.body);
     const { title, content, category, media } = req.body;
+   
     try {
         const newPost = new PostModel({
             user_id: req.user._id,
-            title,
+            title, 
             content,
             category,
             media
