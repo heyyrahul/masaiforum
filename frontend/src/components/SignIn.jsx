@@ -5,7 +5,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
+// import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -14,14 +14,14 @@ import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
-
+import { Link } from 'react-router-dom';
 function Copyright(props) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
       {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
+      
         Your Website
-      </Link>{' '}
+    
       {new Date().getFullYear()}
       {'.'}
     </Typography>
@@ -34,6 +34,7 @@ const defaultTheme = createTheme();
 
 export default function SignInSide() {
   const navigate = useNavigate();
+  const url = `${api}/login`;
   const handleSubmit = async(event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -41,9 +42,10 @@ export default function SignInSide() {
       email: data.get('email'),
       password: data.get('password')
       }
-      console.log(userData);
+    console.log(userData);
+    // console.log(url);
     try {
-        const response = await fetch(`${api}/login`, {
+        const response = await fetch(url, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -132,12 +134,12 @@ export default function SignInSide() {
               </Button>
               <Grid container>
                 <Grid item xs>
-                  <Link href="#" variant="body2">
+                 
                     Forgot password?
-                  </Link>
+                  
                 </Grid>
                 <Grid item>
-                  <Link to="/signup" variant="body2">
+                  <Link to="/signup">
                     {"Don't have an account? Sign Up"}
                   </Link>
                 </Grid>
