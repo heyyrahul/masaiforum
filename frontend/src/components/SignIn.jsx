@@ -13,6 +13,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
+import api from '../api';
 
 function Copyright(props) {
   return (
@@ -42,7 +43,7 @@ export default function SignInSide() {
       }
       console.log(userData);
     try {
-        const response = await fetch('http://localhost:3000/api/login', {
+        const response = await fetch(`${api}/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -136,7 +137,7 @@ export default function SignInSide() {
                   </Link>
                 </Grid>
                 <Grid item>
-                  <Link href="/signup" variant="body2">
+                  <Link to="/signup" variant="body2">
                     {"Don't have an account? Sign Up"}
                   </Link>
                 </Grid>

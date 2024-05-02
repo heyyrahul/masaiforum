@@ -12,6 +12,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import api from '../api';
 
 const defaultTheme = createTheme();
 
@@ -26,7 +27,7 @@ export default function SignUp() {
     };
 
     try {
-      const response = await fetch('http://localhost:3000/api/register', {
+      const response = await fetch(`${api}/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
