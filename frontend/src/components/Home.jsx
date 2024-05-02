@@ -17,6 +17,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import TextField from '@mui/material/TextField';
+import Box from '@mui/material/Box';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -28,28 +29,28 @@ const useStyles = makeStyles((theme) => ({
   postContainer: {
     padding: theme.spacing(2),
     marginBottom: theme.spacing(2),
-    backgroundColor: '#333',
-    color: '#fff',
+    backgroundColor: '#fff',
     borderRadius: theme.shape.borderRadius,
-    boxShadow: theme.shadows[2],
+    boxShadow: theme.shadows[8], 
     display: 'flex',
     flexDirection: 'row',
-    alignItems: 'center',
-  },
-  mediaContainer: {
-    flex: '0 0 auto',
-    marginRight: theme.spacing(2),
+    alignItems: 'stretch',
   },
   media: {
     borderRadius: theme.shape.borderRadius,
     objectFit: 'cover',
     maxHeight: 200,
-    maxWidth: '100%',
+    width: 200,
+    marginRight: theme.spacing(2),
+    boxShadow: theme.shadows[8], 
+    backgroundColor: '#f5f5f5'
   },
   textContainer: {
-    flex: '1 1 auto',
-    display: 'flex',
-    flexDirection: 'column',
+    flex: 1,
+    boxShadow: theme.shadows[2], 
+    padding: theme.spacing(2), 
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: '#f5f5f5',  
   },
   iconContainer: {
     display: 'flex',
@@ -59,11 +60,29 @@ const useStyles = makeStyles((theme) => ({
   icon: {
     marginRight: theme.spacing(1),
   },
+  notification: {
+    position: 'fixed',
+    top: theme.spacing(2),
+    right: theme.spacing(2),
+    backgroundColor: '#4caf50',
+    color: '#fff',
+    padding: theme.spacing(1),
+    borderRadius: theme.shape.borderRadius,
+    boxShadow: theme.shadows[2],
+    zIndex: 9999,
+  },
+  pagination: {
+    display: 'flex',
+    justifyContent: 'center',
+    marginTop: theme.spacing(2),
+  },
 }));
+
+
 
 const Home = () => {
   const classes = useStyles();
-  const [postData, setPostData] = useState(null);
+  const [postData, setPostData] = useState([]);
   const [filterCategory, setFilterCategory] = useState('All');
   const [openModal, setOpenModal] = useState(false);
   const [newPostData, setNewPostData] = useState({
@@ -72,6 +91,9 @@ const Home = () => {
     content: '',
     media: ''
   });
+  const [showNotification, setShowNotification] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const postsPerPage = 5;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -82,14 +104,13 @@ const Home = () => {
         }
         const data = await response.json();
         setPostData(data);
-        // console.log(data);
       } catch (error) {
         console.error(error);
       }
     };
 
     fetchData();
-  }, []);
+  }, [showNotification]); // Fetch data whenever showNotification changes
 
   const handleFilterChange = (event) => {
     setFilterCategory(event.target.value);
@@ -111,13 +132,12 @@ const Home = () => {
     }));
   };
 
-
   const handleAddPost = async () => {
     try {
       const userData = JSON.parse(localStorage.getItem('user'));
       const token = userData.token;
-  
-      const response = await fetch('http://localhost:3000/api/posts', {
+
+      const response = await fetch('https://masaiforum-x4u7.onrender.com/api/posts', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -131,20 +151,37 @@ const Home = () => {
       }
       const data = await response.json();
       console.log('New post added:', data);
+
+      // Update the postData state with the new post
+      setPostData(prevData => [...prevData, data]);
+
+      // Show the notification
+      setShowNotification(true);
+
+      // Hide the notification after a certain duration (e.g., 3 seconds)
+      setTimeout(() => {
+        setShowNotification(false);
+      }, 3000);
+
       setOpenModal(false);
-      // Optionally, you can update the state with the new post
-      // setPostData(prevData => [...prevData, data]);
     } catch (error) {
       console.error('Error adding post:', error);
     }
   };
-  
 
   if (!postData) {
     return <Typography>Loading...</Typography>;
   }
 
-  const filteredPosts = filterCategory !== 'All' ? postData.filter(post => post.category === filterCategory) : postData;
+  // Filter posts based on the selected category
+  const filteredPosts = filterCategory === 'All' ? postData : postData.filter(post => post.category === filterCategory);
+
+  // Pagination
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <div className={classes.container}>
@@ -169,7 +206,7 @@ const Home = () => {
         Add Post
       </Button>
       <Grid container spacing={2}>
-        {filteredPosts.map((post) => (
+        {currentPosts.map((post) => (
           <Grid item xs={12} key={post._id}>
             <Paper elevation={0} className={classes.postContainer}>
               <div className={classes.mediaContainer}>
@@ -221,6 +258,20 @@ const Home = () => {
           </Grid>
         ))}
       </Grid>
+      {/* Pagination */}
+      <Box className={classes.pagination}>
+        {Array.from({ length: Math.ceil(filteredPosts.length / postsPerPage) }, (_, i) => (
+          <Button key={i} onClick={() => paginate(i + 1)}>{i + 1}</Button>
+        ))}
+      </Box>
+      {/* Notification component */}
+      {showNotification && (
+        <div className={classes.notification}>
+          <Typography variant="body1" color="primary">
+            Post added successfully
+          </Typography>
+        </div>
+      )}
       <Dialog open={openModal} onClose={handleModalClose}>
         <DialogTitle>Add New Post</DialogTitle>
         <DialogContent>
@@ -238,13 +289,19 @@ const Home = () => {
           <TextField
             margin="dense"
             id="category"
+            select
             label="Category"
-            type="text"
             fullWidth
             name="category"
             value={newPostData.category}
             onChange={handleInputChange}
-          />
+          >
+            <MenuItem value="Development">Development</MenuItem>
+            <MenuItem value="Design">Design</MenuItem>
+            <MenuItem value="Innovation">Innovation</MenuItem>
+            <MenuItem value="Tutorial">Tutorial</MenuItem>
+            <MenuItem value="Business">Business</MenuItem>
+          </TextField>
           <TextField
             margin="dense"
             id="content"
@@ -278,3 +335,4 @@ const Home = () => {
 };
 
 export default Home;
+

@@ -45,11 +45,11 @@ function ResponsiveAppBar() {
   const handleNavigate = (path) => {
     navigate(path);
     handleCloseNavMenu();
-    setOpenDrawer(false); // Close drawer after navigation
+    setOpenDrawer(false); 
   };
 
   const handleLogout = () => {
-    dispatch(logoutUser()); // Dispatch logoutUser action
+    dispatch(logoutUser()); 
     handleCloseUserMenu();
   };
 
@@ -58,16 +58,7 @@ function ResponsiveAppBar() {
       <AppBar position="static">
         <Container maxWidth="xl">
           <Toolbar disableGutters>
-            <IconButton
-              size="large"
-              aria-label="menu"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
-              color="inherit"
-            >
-              <MenuIcon />
-            </IconButton>
+           
             <Typography
               variant="h6"
               noWrap
