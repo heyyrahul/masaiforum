@@ -66,7 +66,7 @@ postRoute.delete('/:post_id',auth,isPostOwner,async(req,res)=>{
     }
 })
 
-//Like a post ,
+//Like a post
 postRoute.post('/:post_id/like', auth,async(req,res)=>{
     try {
         const post = await PostModel.findById(req.params.post_id);
@@ -82,7 +82,7 @@ postRoute.post('/:post_id/like', auth,async(req,res)=>{
     }
 })
 
-//Comment on  post
+//Comment on a post
 postRoute.post('/:post_id/comment',auth,async(req,res)=>{
     const { comment } = req.body;
     try {
