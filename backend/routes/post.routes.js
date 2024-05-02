@@ -66,7 +66,7 @@ postRoute.delete('/:post_id',auth,isPostOwner,async(req,res)=>{
     }
 })
 
-//Like a post
+//Like a post ,
 postRoute.post('/:post_id/like', auth,async(req,res)=>{
     try {
         const post = await PostModel.findById(req.params.post_id);
