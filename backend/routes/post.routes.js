@@ -82,7 +82,7 @@ postRoute.post('/:post_id/like', auth,async(req,res)=>{
     }
 })
 
-//Comment on a post
+//Comment on  post
 postRoute.post('/:post_id/comment',auth,async(req,res)=>{
     const { comment } = req.body;
     try {
